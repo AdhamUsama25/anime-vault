@@ -1,4 +1,8 @@
 import Image from "next/image";
+import toTitleCase from "@/utils/toTitleCase";
+import { apiBaseURL } from "@/config";
+import { motion } from "framer-motion";
+import { MotionDiv } from "./MotionDiv";
 
 export interface AnimeProp {
   id: string;
@@ -17,13 +21,33 @@ interface Prop {
   index: number;
 }
 
-function AnimeCard({ anime }: Prop) {
+const variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+function AnimeCard({ anime, index }: Prop) {
+  const name = toTitleCase(anime.name.split("_").join(" "));
   return (
-    <div className="max-w-sm rounded relative w-full">
+    <MotionDiv
+      className="max-w-sm rounded relative w-full"
+      title={name}
+      initial="hidden"
+      animate="visible"
+      transition={{
+        delay: index * 0.25,
+        ease: "easeInOut",
+        duration: 0.5,
+      }}
+      viewport={{
+        amount: 0,
+      }}
+      variants={variants}
+    >
       <div className="relative w-full h-[37vh]">
         <Image
-          src={anime.image.original}
-          alt={anime.name}
+          src={`${apiBaseURL}${anime.image.original}`}
+          alt={name}
           fill
           className="rounded-xl"
         />
@@ -31,7 +55,7 @@ function AnimeCard({ anime }: Prop) {
       <div className="py-4 flex flex-col gap-3">
         <div className="flex justify-between items-center gap-1">
           <h2 className="font-bold text-white text-xl line-clamp-1 w-full">
-            {anime.name}
+            {name}
           </h2>
           <div className="py-1 px-2 bg-[#161921] rounded-sm">
             <p className="text-white text-sm font-bold capitalize">
@@ -64,7 +88,7 @@ function AnimeCard({ anime }: Prop) {
           </div>
         </div>
       </div>
-    </div>
+    </MotionDiv>
   );
 }
 
